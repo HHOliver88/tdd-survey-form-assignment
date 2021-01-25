@@ -7,7 +7,32 @@ class SurveyModel extends Model {
 		super();
 	}
 
-	async getSurvey() {}
+	async getSurvey() {
+		let response_data 	    = {status: false, result: [], err: null};
+		
+		try{
+			let get_survey_query 		= Mysql.format(`
+				SELECT surveys.id, surveys.name, surveys.location, surveys.favorite_language, surveys.comment
+				FROM surveys
+				ORDER BY surveys.id DESC
+				LIMIT 1;`
+			);
+
+			let [get_survey_result] = await this.executeQuery(get_survey_query);
+	
+			if(get_survey_result){
+				response_data.status 	= true;
+				response_data.result 	= get_survey_result;
+			}else{
+				response_data.message 	= "No survey found";
+			}
+		}catch(err){
+			response_data.err 			= err;
+			response_data.message 		= "Error in getting a survey.";
+		};
+	
+		return response_data;		
+	}
 
 	async createSurvey(){}
 
